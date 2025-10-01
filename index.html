@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="auth-container">
+        <div class="auth-form" id="login-form">
+            <h2>Login</h2>
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button id="login-btn" class="add-button">Login</button>
+            <button id="show-signup" class="add-button">Sign Up</button>
+        </div>
+        <div class="auth-form" id="signup-form" style="display: none;">
+            <h2>Sign Up</h2>
+            <input type="email" id="signup-email" placeholder="Email" required>
+            <input type="password" id="signup-password" placeholder="Password" required>
+            <button id="signup-btn" class="add-button">Sign Up</button>
+            <button id="show-login" class="add-button">Login</button>
+        </div>
+    </div>
+    <div class="container" style="display: none;">
+        <div class="columns">
+            <div class="column">
+                <h2>Today Revenue</h2>
+                <p class="amount">$0.00</p>
+            </div>
+            <div class="column">
+                <h2>Pending Amount</h2>
+                <p class="amount">$0.00</p>
+            </div>
+            <div class="column">
+                <h2>Company Total Amount</h2>
+                <p class="amount">$0.00</p>
+            </div>
+        </div>
+        <nav class="navigation">
+            <button class="nav-icon active" id="home">🏠 Home</button>
+            <button class="nav-icon" id="expenses">💸 Expenses</button>
+            <button class="nav-icon" id="loans">💰 Loans</button>
+            <button class="nav-icon" id="menu">☰ Menu</button>
+        </nav>
+        <button id="signout-btn" class="add-button">Sign Out</button>
+        <div id="content-area">
+            <div id="home-content">
+                <button id="add-transaction-btn" class="add-button">Add Transaction</button>
+                <div id="transaction-form" class="form-container" style="display: none;">
+                    <form id="add-form">
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" required><br>
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" required><br>
+                        <label for="hour">Hour:</label>
+                        <input type="number" id="hour" min="0" max="23" required><br>
+                        <label for="amount">Amount:</label>
+                        <input type="text" id="amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
+                        <label for="status">Status:</label>
+                        <select id="status" required>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                        </select><br>
+                        <button type="submit">Add</button>
+                        <button type="button" id="cancel-btn">Cancel</button>
+                    </form>
+                </div>
+                <table id="transaction-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Hour</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="expenses-content" style="display: none;">
+                <button id="add-expense-btn" class="add-button">Add Expense</button>
+                <div id="expense-form" class="form-container" style="display: none;">
+                    <form id="add-expense-form">
+                        <label for="expense-date">Date:</label>
+                        <input type="date" id="expense-date" required><br>
+                        <label for="expense-description">Expense Description:</label>
+                        <input type="text" id="expense-description" required><br>
+                        <label for="expense-amount">Amount:</label>
+                        <input type="text" id="expense-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
+                        <button type="submit">Add</button>
+                        <button type="button" id="cancel-expense-btn">Cancel</button>
+                    </form>
+                </div>
+                <table id="expense-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Expense</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expense-table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="loans-content" style="display: none;">
+                <button id="add-loan-btn" class="add-button">Add Loan</button>
+                <div id="loan-form" class="form-container" style="display: none;">
+                    <form id="add-loan-form">
+                        <label for="loan-name">Name:</label>
+                        <input type="text" id="loan-name" required><br>
+                        <label for="loan-amount">Loan Amount:</label>
+                        <input type="text" id="loan-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
+                        <button type="submit">Add</button>
+                        <button type="button" id="cancel-loan-btn">Cancel</button>
+                    </form>
+                </div>
+                <button id="add-payment-btn" class="add-button">Add Payment</button>
+                <div id="payment-form" class="form-container" style="display: none;">
+                    <form id="add-payment-form">
+                        <label for="payment-name">Loan Name:</label>
+                        <select id="payment-name" required></select><br>
+                        <label for="payment-amount">Payment Amount:</label>
+                        <input type="text" id="payment-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
+                        <label for="payment-date">Payment Date:</label>
+                        <input type="date" id="payment-date" required><br>
+                        <button type="submit">Add Payment</button>
+                        <button type="button" id="cancel-payment-btn">Cancel</button>
+                    </form>
+                </div>
+                <table id="loan-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Loan Taken</th>
+                            <th>Amount Paid</th>
+                            <th>Date Paid</th>
+                            <th>Pending</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loan-table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="menu-content" style="display: none;">
+                <select id="statement-select">
+                    <option value="">Select Statement</option>
+                    <option value="weekly">Weekly Statement</option>
+                    <option value="monthly">Monthly Statement</option>
+                </select>
+                <div id="statement-display" style="display: none;">
+                    <h3 id="statement-title"></h3>
+                    <div id="statement-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Item</h2>
+            <form id="edit-form">
+                <label for="edit-date">Date:</label>
+                <input type="date" id="edit-date"><br>
+                <label for="edit-name">Name:</label>
+                <input type="text" id="edit-name"><br>
+                <label for="edit-description">Description:</label>
+                <input type="text" id="edit-description"><br>
+                <label for="edit-hour">Hour:</label>
+                <input type="number" id="edit-hour" min="0" max="23"><br>
+                <label for="edit-amount">Amount:</label>
+                <input type="text" id="edit-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')"><br>
+                <label for="edit-status">Status:</label>
+                <select id="edit-status">
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                </select><br>
+                <button type="submit" class="add-button">Save</button>
+            </form>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDwGx2qJ90LFhu06lgWr_r6vv5Jx6JqxzE",
+            authDomain: "pagepilot-y6ez7.firebaseapp.com",
+            databaseURL: "https://pagepilot-y6ez7-default-rtdb.firebaseio.com",
+            projectId: "pagepilot-y6ez7",
+            storageBucket: "pagepilot-y6ez7.firebasestorage.app",
+            messagingSenderId: "654134506434",
+            appId: "1:654134506434:web:303611b2baa4b90e271c5b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.db = db;
+        window.auth = auth;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.onSnapshot = onSnapshot;
+        window.doc = doc;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
