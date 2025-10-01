@@ -42,10 +42,12 @@
         <nav class="navigation">
             <button class="nav-icon active" id="home">🏠 Home</button>
             <button class="nav-icon" id="expenses">💸 Expenses</button>
-            <button class="nav-icon" id="loans">💰 Loans</button>
             <button class="nav-icon" id="menu">☰ Menu</button>
         </nav>
-        <button id="signout-btn" class="add-button">Sign Out</button>
+        <div id="profile-container" class="profile-container">👤</div>
+        <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
+            <button id="logout-btn" class="add-button">Logout</button>
+        </div>
         <div id="content-area">
             <div id="home-content">
                 <button id="add-transaction-btn" class="add-button">Add Transaction</button>
@@ -107,46 +109,6 @@
                         </tr>
                     </thead>
                     <tbody id="expense-table-body">
-                    </tbody>
-                </table>
-            </div>
-            <div id="loans-content" style="display: none;">
-                <button id="add-loan-btn" class="add-button">Add Loan</button>
-                <div id="loan-form" class="form-container" style="display: none;">
-                    <form id="add-loan-form">
-                        <label for="loan-name">Name:</label>
-                        <input type="text" id="loan-name" required><br>
-                        <label for="loan-amount">Loan Amount:</label>
-                        <input type="text" id="loan-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
-                        <button type="submit">Add</button>
-                        <button type="button" id="cancel-loan-btn">Cancel</button>
-                    </form>
-                </div>
-                <button id="add-payment-btn" class="add-button">Add Payment</button>
-                <div id="payment-form" class="form-container" style="display: none;">
-                    <form id="add-payment-form">
-                        <label for="payment-name">Loan Name:</label>
-                        <select id="payment-name" required></select><br>
-                        <label for="payment-amount">Payment Amount:</label>
-                        <input type="text" id="payment-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
-                        <label for="payment-date">Payment Date:</label>
-                        <input type="date" id="payment-date" required><br>
-                        <button type="submit">Add Payment</button>
-                        <button type="button" id="cancel-payment-btn">Cancel</button>
-                    </form>
-                </div>
-                <table id="loan-table" class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Loan Taken</th>
-                            <th>Amount Paid</th>
-                            <th>Date Paid</th>
-                            <th>Pending</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="loan-table-body">
                     </tbody>
                 </table>
             </div>
