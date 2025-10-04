@@ -30,13 +30,15 @@ const ELEMENT_IDS = {
     EDIT_FORM: 'edit-form',
     EDIT_DATE: 'edit-date',
     EDIT_NAME: 'edit-name',
-    EDIT_HOUR: 'edit-hour',
+    EDIT_UNIT: 'edit-unit',
+    EDIT_VALUE: 'edit-value',
     EDIT_AMOUNT: 'edit-amount',
     EDIT_STATUS: 'edit-status',
     EDIT_DESCRIPTION: 'edit-description',
     DATE: 'date',
     NAME: 'name',
-    HOUR: 'hour',
+    UNIT: 'unit',
+    VALUE: 'value',
     AMOUNT: 'amount',
     STATUS: 'status',
     EXPENSE_DATE: 'expense-date',
@@ -87,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         initializeExpenseHandlers();
         initializeMenuHandlers();
         initializeEditModal();
+        initializeDailyRefresh();
     } catch (error) {
         console.error('Initialization error:', error);
         alert('An error occurred during initialization. Please refresh the page.');
@@ -194,11 +197,11 @@ async function loadData() {
 // Update columns
 function updateColumns() {
     const today = new Date().toISOString().split('T')[0];
-    const todayRevenue = transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + (t.amount || 0), 0);
+    const todayRevenue = transactions.filter(t => t.status === 'paid' && t.date === today).reduce((sum, t) => sum + (t.amount || 0), 0);
     const pendingAmount = transactions.filter(t => t.status === 'pending').reduce((sum, t) => sum + (t.amount || 0), 0);
     const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-    const totalTransactions = transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
-    const companyTotal = totalTransactions - totalExpenses;
+    const totalPaidTransactions = transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + (t.amount || 0), 0);
+    const companyTotal = totalPaidTransactions - totalExpenses;
 
     elements.amounts[0].textContent = `₹${todayRevenue.toFixed(2)}`;
     elements.amounts[1].textContent = `₹${pendingAmount.toFixed(2)}`;
@@ -251,14 +254,15 @@ function getTransactionFormData() {
     return {
         date: elements[ELEMENT_IDS.DATE].value,
         name: elements[ELEMENT_IDS.NAME].value.trim(),
-        hour: elements[ELEMENT_IDS.HOUR].value,
+        unit: elements[ELEMENT_IDS.UNIT].value,
+        value: parseFloat(elements[ELEMENT_IDS.VALUE].value),
         amount: parseFloat(elements[ELEMENT_IDS.AMOUNT].value),
         status: elements[ELEMENT_IDS.STATUS].value
     };
 }
 
 function validateTransactionData(data) {
-    if (!data.date || !data.name || !data.hour || isNaN(data.amount) || data.amount <= 0) {
+    if (!data.date || !data.name || !data.unit || isNaN(data.value) || data.value < 0 || isNaN(data.amount) || data.amount <= 0) {
         alert('Please fill all fields with valid data.');
         return false;
     }
@@ -268,11 +272,12 @@ function validateTransactionData(data) {
 function renderTransactions() {
     const fragment = document.createDocumentFragment();
     transactions.forEach(t => {
+        const formattedValue = t.unit === 'hours' ? `${t.value}hr` : `${t.value}D`;
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${escapeHtml(t.date)}</td>
             <td>${escapeHtml(t.name)}</td>
-            <td>${escapeHtml(t.hour)}</td>
+            <td>${escapeHtml(formattedValue)}</td>
             <td>₹${(t.amount || 0).toFixed(2)}</td>
             <td class="${CLASSES.STATUS}" data-key="${t.key}" data-status="${t.status}">${escapeHtml(t.status)}</td>
             <td><button class="${CLASSES.EDIT_BTN}" data-key="${t.key}" data-type="transaction">Edit</button> <button class="${CLASSES.DELETE_BTN}" data-key="${t.key}">Delete</button></td>
@@ -412,10 +417,11 @@ function openEditModal(key, type) {
 
     // Show relevant fields
     if (type === 'transaction') {
-        showEditFields(['edit-date', 'edit-name', 'edit-hour', 'edit-amount', 'edit-status']);
+        showEditFields(['edit-date', 'edit-name', 'edit-unit', 'edit-value', 'edit-amount', 'edit-status']);
         elements[ELEMENT_IDS.EDIT_DATE].value = item.date;
         elements[ELEMENT_IDS.EDIT_NAME].value = item.name;
-        elements[ELEMENT_IDS.EDIT_HOUR].value = item.hour;
+        elements[ELEMENT_IDS.EDIT_UNIT].value = item.unit;
+        elements[ELEMENT_IDS.EDIT_VALUE].value = item.value;
         elements[ELEMENT_IDS.EDIT_AMOUNT].value = item.amount;
         elements[ELEMENT_IDS.EDIT_STATUS].value = item.status;
     } else if (type === 'expense') {
@@ -431,7 +437,8 @@ function openEditModal(key, type) {
         if (type === 'transaction') {
             updatedData.date = elements[ELEMENT_IDS.EDIT_DATE].value;
             updatedData.name = elements[ELEMENT_IDS.EDIT_NAME].value.trim();
-            updatedData.hour = elements[ELEMENT_IDS.EDIT_HOUR].value;
+            updatedData.unit = elements[ELEMENT_IDS.EDIT_UNIT].value;
+            updatedData.value = parseFloat(elements[ELEMENT_IDS.EDIT_VALUE].value);
             updatedData.amount = parseFloat(elements[ELEMENT_IDS.EDIT_AMOUNT].value);
             updatedData.status = elements[ELEMENT_IDS.EDIT_STATUS].value;
             if (!validateTransactionData(updatedData)) return;
@@ -469,10 +476,14 @@ function initializeMenuHandlers() {
         const value = this.value;
         if (value) {
             elements[ELEMENT_IDS.STATEMENT_DISPLAY].style.display = 'block';
+            elements[ELEMENT_IDS.STATEMENT_DISPLAY].classList.add('show');
             elements[ELEMENT_IDS.STATEMENT_TITLE].textContent = value === 'weekly' ? 'Weekly Statement' : 'Monthly Statement';
             renderStatement(value);
         } else {
-            elements[ELEMENT_IDS.STATEMENT_DISPLAY].style.display = 'none';
+            elements[ELEMENT_IDS.STATEMENT_DISPLAY].classList.remove('show');
+            setTimeout(() => {
+                elements[ELEMENT_IDS.STATEMENT_DISPLAY].style.display = 'none';
+            }, 500); // Match transition duration
         }
     });
 }
@@ -528,4 +539,18 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Daily refresh mechanism
+function initializeDailyRefresh() {
+    let currentDate = new Date().toISOString().split('T')[0];
+
+    // Check every minute for date change
+    setInterval(() => {
+        const newDate = new Date().toISOString().split('T')[0];
+        if (newDate !== currentDate) {
+            currentDate = newDate;
+            updateColumns(); // Refresh today's revenue
+        }
+    }, 60000); // 60 seconds
 }

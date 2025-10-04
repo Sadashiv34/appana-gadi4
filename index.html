@@ -57,8 +57,13 @@
                         <input type="date" id="date" required><br>
                         <label for="name">Name:</label>
                         <input type="text" id="name" required><br>
-                        <label for="hour">Hour:</label>
-                        <input type="number" id="hour" min="0" max="23" required><br>
+                        <label for="unit">Unit:</label>
+                        <select id="unit" required>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                        </select><br>
+                        <label for="value">Value:</label>
+                        <input type="number" id="value" min="0" required><br>
                         <label for="amount">Amount:</label>
                         <input type="text" id="amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')" required><br>
                         <label for="status">Status:</label>
@@ -75,7 +80,7 @@
                         <tr>
                             <th>Date</th>
                             <th>Name</th>
-                            <th>Hour</th>
+                            <th>Hours/Days</th>
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -136,8 +141,13 @@
                 <input type="text" id="edit-name"><br>
                 <label for="edit-description">Description:</label>
                 <input type="text" id="edit-description"><br>
-                <label for="edit-hour">Hour:</label>
-                <input type="number" id="edit-hour" min="0" max="23"><br>
+                <label for="edit-unit">Unit:</label>
+                <select id="edit-unit">
+                    <option value="hours">Hours</option>
+                    <option value="days">Days</option>
+                </select><br>
+                <label for="edit-value">Value:</label>
+                <input type="number" id="edit-value" min="0"><br>
                 <label for="edit-amount">Amount:</label>
                 <input type="text" id="edit-amount" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')"><br>
                 <label for="edit-status">Status:</label>
